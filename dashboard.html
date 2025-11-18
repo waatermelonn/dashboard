@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IITB EV Drive - Passenger View</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            background-color: #f0fdf4; /* green-50 */
+        }
+        /* App container */
+        .app-shell {
+            width: 100%;
+            max-width: 440px; /* Centered, mobile-first width */
+            margin: 0 auto;
+            min-height: 100vh;
+            background-color: #FFFFFF;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Custom select arrow */
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234d7c0f' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            padding-right: 2.5rem; /* Make space for the arrow */
+        }
+
+        .route-map::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            bottom: 10px;
+            width: 4px;
+            background-color: #A7F3D0; /* Green 200 */
+            border-radius: 2px;
+        }
+        .route-stop {
+            position: relative;
+            padding-left: 28px;
+            margin-bottom: 8px; /* Added spacing */
+        }
+        .route-stop::before {
+            content: '';
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            background-color: #A7F3D0; /* Green 200 */
+            border-radius: 50%;
+            border: 3px solid #FFFFFF;
+        }
+        .route-stop.you-are-here::before {
+            background-color: #22C55E; /* Green 500 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-shell">
+        
+        <!-- App Header -->
+        <header class="p-4 flex justify-between items-center bg-white border-b border-green-200 sticky top-0 z-10">
+            <!-- Hamburger Menu -->
+            <button class="p-2 text-gray-700 rounded-full hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-16 6h16" />
+                </svg>
+            </button>
+            
+            <!-- Stop Selector -->
+            <select class="custom-select w-auto max-w-xs text-center font-bold text-lg text-green-700 bg-green-50 border border-green-200 rounded-full py-2 px-4 focus:outline-none focus:ring-2 focus:ring-green-400">
+                <option>Hostel 5</option>
+                <option>Hostel 7</option>
+                <option selected>LHC</option>
+                <option>Main Gate</option>
+            </select>
+            
+            <!-- Spacer to balance header -->
+            <div class="w-10 h-10"></div>
+        </header>
+
+        <!-- Main Content Wrapper -->
+        <main class="flex-grow p-4 space-y-4">
+            
+            <!-- Zone 1: Immediate Action (Card) -->
+            <div class="bg-green-100 flex flex-col justify-center items-center text-center p-6 rounded-2xl shadow-lg border border-green-200">
+                <h1 class="text-xl font-bold text-green-700 tracking-wider">NEXT EV ARRIVAL</h1>
+                <p id="main-countdown" class="text-7xl font-black text-gray-900 my-2">in 4:15</p>
+                <p class="text-base font-semibold text-gray-600">Route A: Main Gate ➔ LHC ➔ Hostel 8</p>
+                <div class="mt-4 flex items-center justify-center space-x-3 bg-green-500 text-white rounded-full px-5 py-2 shadow">
+                    <div class="w-3 h-3 bg-white/50 rounded-full"></div>
+                    <span class="text-lg font-bold">Seats Available</span>
+                </div>
+            </div>
+
+            <!-- Zone 2 & 3: Planning (Card) -->
+            <div class="bg-white rounded-2xl shadow-lg border border-gray-100 p-5">
+                <!-- Zone 2: Planning -->
+                <h2 class="text-xl font-bold text-green-700 mb-4 text-center">ARRIVALS AT THIS STOP</h2>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                        <span class="text-lg font-semibold text-gray-700">1st EV</span>
+                        <span id="eta-1" class="text-xl font-bold text-gray-900">Arriving in 4:15</span>
+                    </div>
+                    <div class="flex justify-between items-center bg-gray-100 p-4 rounded-lg">
+                        <span class="text-lg font-semibold text-gray-700">2nd EV</span>
+                        <span id="eta-2" class="text-xl font-bold text-gray-900">Arriving in 11:30</span>
+                    </div>
+                </div>
+
+                <hr class="my-6 border-t border-gray-200">
+                
+                <!-- Zone 3: Always On -->
+                <div class="flex p-3 space-x-4">
+                    <!-- Route Map -->
+                    <div class="w-1/2">
+                        <h3 class="font-bold text-green-700 mb-2 text-base">Route Map</h3>
+                        <div class="route-map relative h-full text-sm">
+                            <div class="route-stop">Main Gate</div>
+                            <div class="route-stop you-are-here font-bold text-green-600">LHC</div>
+                            <div class="route-stop">Hostel 8</div>
+                            <div class="route-stop">Hostel 12</div>
+                        </div>
+                    </div>
+                    <!-- Service Timings -->
+                    <div class="w-1/2 flex flex-col justify-center items-center text-center">
+                        <p class="font-bold text-lg text-green-700">Service Hours</p>
+                        <p class="font-semibold text-xl text-gray-900">7:00 AM - 11:00 PM</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const mainCountdownEl = document.getElementById('main-countdown');
+            const eta1El = document.getElementById('eta-1');
+            const eta2El = document.getElementById('eta-2');
+
+            // --- Set initial arrival times ---
+            let nextBusArrival = new Date().getTime() + 2 * 60 * 1000 + 15 * 1000; // 2 min 15 sec from now
+            let secondBusArrival = new Date().getTime() + 8 * 60 * 1000 + 30 * 1000; // 8 min 30 sec from now
+
+            function formatTime(ms) {
+                if (ms < 0) return 'Arrived';
+                const totalSeconds = Math.floor(ms / 1000);
+                const minutes = Math.floor(totalSeconds / 60);
+                const seconds = totalSeconds % 60;
+                return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            // --- Update Timers and Clock ---
+            function updateDisplay() {
+                const now = new Date().getTime();
+
+                // Update countdowns
+                const timeToNext = nextBusArrival - now;
+                const timeToSecond = secondBusArrival - now;
+                
+                mainCountdownEl.textContent = `in ${formatTime(timeToNext)}`;
+                eta1El.textContent = `Arriving in ${formatTime(timeToNext)}`;
+                eta2El.textContent = `Arriving in ${formatTime(timeToSecond)}`;
+
+                // Reset if a bus "arrives"
+                if (timeToNext < 0) {
+                    nextBusArrival = new Date().getTime() + 6 * 60 * 1000; // Next one in 6 mins
+                    secondBusArrival = new Date().getTime() + 12 * 60 * 1000; // And the one after in 12
+                }
+            }
+
+            // --- Start Everything ---
+            setInterval(updateDisplay, 1000); // Update timers and clock every second
+            updateDisplay(); // Initial call
+        });
+    </script>
+
+</body>
+</html>
